@@ -43,26 +43,26 @@ Param(
 #Assign group you want to manage to $security
 $security = $group
 #Security Group being searched:
-$expressCorporate = Get-ADGroupMember -Identity $security -Server $oldDC
+$oldGroup = Get-ADGroupMember -Identity $security -Server $oldDC
 
-#Variable array of all expk user properties
-$expkUsers = Get-ADUser -Filter * -Server newDC
+#Variable array of all user properties on new domain
+$NewDomainUsers = Get-ADUser -Filter * -Server newDC
 
-#Sanitized list of users from expk
+#Sanitized list of users from new domain
 $expkUserArray = @()
 
 
 #Sanitization loop
-Foreach ($expkUser in $expkUsers){
+Foreach ($User in $NewDomainUsers){
 
 #Add only the name of the user to the new array list.
-$expkUserArray += $expkUser.SamAccountName
+$NewDomainUserArray += $User.SamAccountName
 
 }
 
-Foreach($user in $expkUserArray){
+Foreach($user in $NewDomainUserArray){
 
-If ($expressCorporate -match $user){
+If ($oldGroup -match $user){
 
 Write-Host "Match Found: $user added to $security"
 Add-ADPrincipalGroupMembership -Identity $user -MemberOf $security -Server $newDC
