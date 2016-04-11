@@ -36,7 +36,7 @@ $security = $Group
 $oldGroup = Get-ADGroupMember -Identity $security -Server $oldDC
 
 #Variable array of all user properties on new domain
-$NewDomainUsers = Get-ADUser -Filter * -Server newDC
+$NewDomainUsers = Get-ADUser -Filter * -Server $newDC
 
 #Sanitized list of users from new domain
 $newDomainUserArray = @()
