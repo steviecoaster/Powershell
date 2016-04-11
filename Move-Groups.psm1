@@ -1,30 +1,18 @@
 ﻿<#
 .SYNOPSIS
 This function migrates a security group from one Active Directory Domain to the other.
-
 .DESCRIPTION
-
 By supplying a Security Group, and a DC from each the old domain and new domain, Move-Group will pull
 all users from the group in the old domain, and place them in the same Security Group on the new domain.
-
 This script does NOT create the group on the new domain at the moment, so ensure the security group exists in both locations before use.
-
 .EXAMPLE
-
 Move-Group -Group "Test" -OldDC dc.olddomain.example -NewDC dc.newdomain.example
-
 .PARAMETER group
-
 The security group to query and migrates
-
 .PARAMETER olddc
-
 The FQDN of a domain controller in the OLD Domain
-
 .PARAMETER newdc
-
 The FQDN of a domain controller in the NEW Domain
-
 #> 
 
 Function Move-Group {
@@ -51,7 +39,7 @@ $oldGroup = Get-ADGroupMember -Identity $security -Server $oldDC
 $NewDomainUsers = Get-ADUser -Filter * -Server newDC
 
 #Sanitized list of users from new domain
-$expkUserArray = @()
+$newDomainUserArray = @()
 
 
 #Sanitization loop
