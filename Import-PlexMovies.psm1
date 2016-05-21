@@ -1,4 +1,37 @@
-﻿Function Import-PlexMovies{
+﻿<#
+.SYNOPSIS
+
+Utility to copy content to your Plex Library
+
+.DESCRIPTION
+
+The Import-PlexMovies module provides a simple way to copy movies from any media to your Plex Library Location. It provides output of
+the current movie being copied, as well as the total progress of the entire operation.
+
+DISCLAIMER: Use of this software for pirate content, while can't be stopped, is frowned upon. 
+Movies are cheap, just buy them and make digital copies, and use this to move them around!
+
+
+
+.PARAMETER Source
+
+Supply the path to the removable media you are copying from
+
+.PARAMETER Destination
+
+Supply the path to your Plex Library Movies/TV Shows/etc folder, whatever you need
+
+
+.EXAMPLE
+
+There's no need to number your examples.
+.EXAMPLE
+
+Import-PlexMovies -Source [jump drive] -Destination [Plex Library location]
+
+#>
+
+Function Import-PlexMovies{
 #REGION: Parameter Declarations
 [CmdletBinding()]
 Param(
