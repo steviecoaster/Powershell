@@ -21,10 +21,6 @@ Supply the path to the removable media you are copying from
 
 Supply the path to your Plex Library Movies/TV Shows/etc folder, whatever you need
 
-
-.EXAMPLE
-
-There's no need to number your examples.
 .EXAMPLE
 
 Import-PlexMovies -Source [jump drive] -Destination [Plex Library location]
