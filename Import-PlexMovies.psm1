@@ -27,60 +27,90 @@ Import-PlexMovies -Source [jump drive] -Destination [Plex Library location]
 
 #>
 
+
+
 Function Import-PlexMovies{
 #REGION: Parameter Declarations
 [CmdletBinding()]
 Param(
-  [Parameter(Mandatory=$True,Position=0)]
+   [Parameter(Mandatory=$True,Position=0)]
    [string]$Source,
 	
    [Parameter(Mandatory=$True,Position=1)]
-   [string]$Destination
+   [string]$Destination,
+   
+   [Parameter(Mandatory=$False,Position=2)]
+   [switch]$Analyze,
+
+   [Parameter(Mandatory=$False,Position=3)]
+   [switch]$UseExclusion,
+
+   [Parameter(Mandatory=$False,Position=4)]
+   [string]$ExclusionFile
 )
 #END REGION
 
+
+
+
+
+
 #REGION: Variable Declaration
 $grab = New-Object System.Collections.ArrayList
-$onplex = New-Object System.Collections.Arraylist
-$onjump = New-Object System.Collections.ArrayList
-
 $ppath = $Destination
 $jpath = $Source
 
+If($UseExclusion -eq $true){
+If($ExclusionFile -eq ""){
+
+Write-Host "You specified -UseExclusion, please also use -ExclusionFile"
+
+Break
+
+}
+$plexmovies = Get-Content $ExclusionFile | Sort-Object
+
+}
+
+Else{
+
 $plexmovies = Get-ChildItem -Path $Destination | Sort-Object
+
+}
 $jumpmovies = Get-ChildItem -Path $Source | Sort-Object
+$compare = Compare-Object -ReferenceObject $plexmovies -DifferenceObject $jumpmovies | Sort-Object InputObject | Where-Object { $_.SideIndicator -eq '=>' }
+$grab = New-Object System.Collections.ArrayList
+$onplex = New-Object System.Collections.ArrayList
+$onjump = New-Object System.Collections.ArrayList
 #END REGION
 
-#REGION: Plex titles to ArrayList
-Foreach($pm in $plexmovies){
+Foreach($p in $plexmovies){
 
-[void]$onplex.Add($pm)
+[void]$onplex.Add($p)
 
 }
 
-#END REGION
+Foreach($j in $jumpmovies){
 
-#REGION: Jump titles to Arraylist
-Foreach($jm in $jumpmovies){
-
-[void]$onjump.Add($jm)
+[void]$onjump.Add($j)
 
 }
 
-#END REGION
+ForEach($c in $compare) {
 
-#REGION: ArrayList Comparison to Differences Arraylist
-ForEach($j in $onjump){
-
-    If ($onplex -notcontains $j){
-
-    [void]$grab.Add($j)
-
-    }
+[void]$grab.Add($c.InputObject.Name)
 
 }
 
-#END REGION
+$grab.Remove("Current Movies Saturday, May 21, 2016.csv")
+
+
+
+
+
+
+
+
 
 #REGION: Testing, output counts to screen
 Write-host "Plex Server # Movies:" $onplex.Count
@@ -89,21 +119,28 @@ Write-Host "Movies to copy:" $grab.Count
 
 #END REGION
 
+
+
+
+
 #REGION: Copy files
+
+
 ForEach($flick in $grab){
 $i++
+If($Analyze){
+Copy-Item -Path $jpath\$flick -Destination $ppath\$flick -WhatIf
+}
+Else{
 Copy-Item -Path $jpath\$flick -Destination $ppath\$flick
-Write-Progress -Activity "Copying Movie: $flick" -Status "Percent Complete:" (($i / $grab.Count) * 100) -PercentComplete 
+}
+Write-Progress -Activity "Copying Movie: $flick" -Status "Percent Complete:"  -PercentComplete (($i / $grab.Count) * 100)
+Write-Verbose "$flick copied successfully!"
+}
 
 }
 
 #END REGION
 
-#REGION: Plex movie list to CSV
-
-
-#END REGION
-
-}
 
 Export-ModuleMember Import-PlexMovies
