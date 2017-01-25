@@ -14,7 +14,7 @@ Set-Location $folder -ErrorAction SilentlyContinue
 
 
 
-$json = Get-Content manifest.json | ConvertFrom-Json
+$json = Get-Content manifest.json -Raw| ConvertFrom-Json
 
 $obj = New-Object System.Object
 
